@@ -98,6 +98,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="DC_QRM_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="DC_QRM_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -147,6 +148,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="exploring-market-risk-factor-data">Exploring Market Risk-Factor Data</h2>
 <section id="video-1" class="level3">
 <h3 class="anchored" data-anchor-id="video-1">Video 1</h3>
+<p>Introduction:</p>
 <p>Hello. My name is Alex McNeil, and I am going to take your through “An Introduction to Quantitative Risk Management”.</p>
 <p>My background is in mathematical statistics, actuarial science, and quantitative finance. Together with my colleagues Ruediger Frey and Paul Embrechts, I am the author of the book “Quantitative Risk Management: Concepts, Techniques, and Tools”, published by Princeton University Press. If you want the theoretical background to this course, I recommend you take a look. Together with my co-authors and with Marius Hofert, I have also created the website <code>qrmtutorial.org</code> which provides complementary materials to the QRM book. In particular, there is a lot of R code there, which you might want to try after you’ve taken this course. Marius and I have two R packages which feature prominently in <code>qrmtutorial</code>. These are <code>qrmdata</code>, which is a large collection of financial datasets for students and researchers in QRM, and <code>qrmtools</code>, which is a set of useful functions. You’ll use these packages in the course.</p>
 <p>In QRM, the goal is to quantify the risk of a portfolio of risky assets. Measuring the risk is the first step towards managing the risk. In the book I wrote, we consider the typical portfolios of risky assets held by banks and insurance companies, and sometimes also their liabilities. But the ideas apply equally to the portfolio of a private investor, like you or me. Managing the risk can entail many things. For example, you might try to reduce the risk by selling assets, by acquiring new assets to increase the diversification of the portfolio, or by using so-called hedging strategies. For the banks and insurers, an important part of managing risk is making sure they have sufficient capital to withstand large losses on their portfolios and remain solvent. For this purpose, they compute measurements of the amounts that they could lose in periods of extreme market stress. A well-known example of one of these risk measures is Value-at-Risk. In this course, you will work up to calculating Value-at-Risk for portfolios. To begin with, it is important to consider where the risk in a portfolio comes from.</p>
@@ -185,9 +187,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <p>Let’s practice</p>
-</section>
-<section id="exploring-risk-factor-time-series-equity-indexes" class="level3">
-<h3 class="anchored" data-anchor-id="exploring-risk-factor-time-series-equity-indexes">Exploring risk-factor time series: equity indexes</h3>
+<section id="exploring-risk-factor-time-series-equity-indexes" class="level4">
+<h4 class="anchored" data-anchor-id="exploring-risk-factor-time-series-equity-indexes">Exploring risk-factor time series: equity indexes</h4>
 <p>In this exercise, you will look at an equity index and plot it for a particular range of dates. The data used in this exercise and in the rest of the course are contained in the package <code>qrmdata</code>. You also need the package <code>xts</code> to manipulate time series.</p>
 <p>When the <code>qrmdata</code> library is attached, as it will be throughout the course, you can load a dataset with the <code>data()</code> command. For example, the command <code>data("FTSE")</code> loads the UK FTSE (Financial Times Stock Exchange) index, which you can then refer to as object <code>FTSE</code>.</p>
 <p>If you want to extract the data from a certain date range, for example from April 1 to June 30, 2000, you can create a new object using the command <code>ftse00 &lt;- FTSE["2000-04-01/2000-06-30"]</code>.</p>
@@ -237,6 +238,299 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="DC_QRM_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+</section>
+<section id="exploring-risk-factor-time-series-individual-equities" class="level4">
+<h4 class="anchored" data-anchor-id="exploring-risk-factor-time-series-individual-equities">Exploring risk-factor time series: individual equities</h4>
+<p>For some risk management applications, it is sufficient to model equity risk by looking at indexes. If you want a more detailed model of the risk in a portfolio of equities, you can drill down to the level of individual share prices.</p>
+<p>In the previous chapter, you used <code>DJ["2008/2009"]</code> to extract the Dow Jones data from certain rows of an <code>xts</code> object by specifying a date range index. To also extract data from particular columns, you can add a column identifier, like a string name or numeric index, in the brackets following a comma. To select multiple columns, include these column identifiers in a vector. This [rows, columns] format is consistent with indexing most other two dimensional objects in R.</p>
+<p><code>data[index, colname]</code> <code>data[index, c(col1index, col2index)]</code></p>
+<p>The <code>qrmdata</code> package also includes data for certain constituents, or the stocks or companies part of a larger index. The Dow Jones constituents data are contained in <code>DJ_const</code>. In this exercise, you will view the names of all its stocks, select the <code>Apple</code> and <code>Goldman Sachs</code> share prices, and plot them using the command <code>plot.zoo()</code> to display multiple time series.</p>
+<ul>
+<li>Load the DJ constituents data <code>DJ_const</code> from <code>qrmdata</code>.</li>
+<li>Use <code>names()</code> to view the names in <code>DJ_const</code> and <code>head()</code> to display the first few rows.</li>
+<li>Extract only the Apple (“AAPL”) and Goldman Sachs (“GS”) share prices for 2008-2009 and assign them to object <code>stocks</code>.</li>
+<li>Plot <code>stocks</code> using <code>plot.zoo()</code>.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load DJ constituents data</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(DJ_const)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply names() and head() to DJ_const</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(DJ_const)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "AAPL" "AXP"  "BA"   "CAT"  "CSCO" "CVX"  "DD"   "DIS"  "GE"   "GS"  
+[11] "HD"   "IBM"  "INTC" "JNJ"  "JPM"  "KO"   "MCD"  "MMM"  "MRK"  "MSFT"
+[21] "NKE"  "PFE"  "PG"   "TRV"  "UNH"  "UTX"  "V"    "VZ"   "WMT"  "XOM" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(DJ_const)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           AAPL AXP       BA      CAT CSCO CVX       DD      DIS       GE GS HD
+1962-01-02   NA  NA 0.212905 0.593184   NA  NA 1.227958 0.061014 0.145967 NA NA
+1962-01-03   NA  NA 0.217163 0.598964   NA  NA 1.229230 0.061832 0.144501 NA NA
+1962-01-04   NA  NA 0.215034 0.614372   NA  NA 1.220331 0.061832 0.142794 NA NA
+1962-01-05   NA  NA 0.210773 0.620152   NA  NA 1.187280 0.062039 0.139132 NA NA
+1962-01-08   NA  NA 0.211306 0.624001   NA  NA 1.169484 0.061832 0.138889 NA NA
+1962-01-09   NA  NA 0.211839 0.629777   NA  NA 1.173297 0.063060 0.139620 NA NA
+                IBM INTC JNJ JPM       KO MCD MMM MRK MSFT NKE PFE PG TRV UNH
+1962-01-02 2.346625   NA  NA  NA 0.031031  NA  NA  NA   NA  NA  NA NA  NA  NA
+1962-01-03 2.367136   NA  NA  NA 0.030339  NA  NA  NA   NA  NA  NA NA  NA  NA
+1962-01-04 2.343548   NA  NA  NA 0.030571  NA  NA  NA   NA  NA  NA NA  NA  NA
+1962-01-05 2.297395   NA  NA  NA 0.029879  NA  NA  NA   NA  NA  NA NA  NA  NA
+1962-01-08 2.254319   NA  NA  NA 0.029570  NA  NA  NA   NA  NA  NA NA  NA  NA
+1962-01-09 2.280983   NA  NA  NA 0.030110  NA  NA  NA   NA  NA  NA NA  NA  NA
+           UTX  V VZ WMT XOM
+1962-01-02  NA NA NA  NA  NA
+1962-01-03  NA NA NA  NA  NA
+1962-01-04  NA NA NA  NA  NA
+1962-01-05  NA NA NA  NA  NA
+1962-01-08  NA NA NA  NA  NA
+1962-01-09  NA NA NA  NA  NA</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract AAPL and GS in 2008-09 and assign to stocks</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>djstocks <span class="ot">&lt;-</span> DJ_const[<span class="st">"2008/2009"</span>, <span class="fu">c</span>(<span class="st">"AAPL"</span>, <span class="st">"GS"</span>)]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot stocks with plot.zoo()</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djstocks)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="exploring-risk-factor-data-exchange-rates" class="level4">
+<h4 class="anchored" data-anchor-id="exploring-risk-factor-data-exchange-rates">Exploring risk-factor data: exchange rates</h4>
+<p>For a portfolio with risk exposure in different countries, it is necessary to consider the risk coming from foreign exchange (FX) rates. The <code>qrmdata</code> package includes FX rate data for many currencies, ranging from Swiss Francs to Japanese Yen, with respect to the USD (United States dollar) and GBP (Great Britain pound).</p>
+<p>In this exercise, you will look at the datasets <code>EUR_USD</code> and <code>GBP_USD</code>, which contain the Euro and British pound exchange rates against the US dollar. Then, you will merge these time series and plot them together for the period 2010-2015.</p>
+<ul>
+<li>Load the foreign exchange data <code>GBP_USD</code> and <code>EUR_USD</code> from <code>qrmdata</code>.</li>
+<li>Use <code>plot()</code> to plot each exchange rate separately.</li>
+<li>Use <code>plot()</code> and the inverse of <code>GBP_USD</code> to plot a US dollar to British pound exchange rate. Use <code>merge()</code> to merge the <code>GBP_USD</code> and <code>EUR_USD</code> data, in that order, as object <code>fx</code>.</li>
+<li>Extract the exchange rates for 2010-15 from <code>fx</code> and assign to <code>fx0015</code>.</li>
+<li>Plot <code>fx0015</code> using <code>plot.zoo()</code>.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load exchange rate data</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"GBP_USD"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"EUR_USD"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the two exchange rates</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(GBP_USD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the two exchange rates</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(EUR_USD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot a USD_GBP exchange rate</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span> <span class="sc">/</span> GBP_USD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the two exchange rates GBP_USD and EUR_USD</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>fx <span class="ot">&lt;-</span> <span class="fu">merge</span>(GBP_USD, EUR_USD, <span class="at">all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract 2010-15 data from fx and assign to fx0015</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fx0015 <span class="ot">&lt;-</span> fx[<span class="st">"2010/2015"</span>]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the exchange rates in fx0015</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(fx0015)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="video-2" class="level3">
+<h3 class="anchored" data-anchor-id="video-2">Video 2</h3>
+<p>Risk-factor returns:</p>
+<p>In QRM, the aim is to model the fluctuations in key risk factors which affect the value of a portfolio.</p>
+<p>These fluctuations are called the risk-factor changes or risk-factor returns or simply returns. However, there are a few different ways of defining returns. Let <span class="math inline">\(Z_t\)</span> be a time series containing the values of a risk factor at a time at a set of regularly-spaced times, which could represent days, weeks, months, etc. For illustration, let’s suppose it is a daily series. Here are three different ways of defining risk-factor returns <span class="math inline">\(X_t\)</span>: In the first definition, the returns are the differences of the risk-factor values, known as simple returns. This is the simplest definition but not the most common. It tends to be used when the risk factors have very small values close to zero (like certain interest-rate series). The second definition is the easiest to interpret. The relative returns are the differences divided by the initial values. If you multiply the relative returns by one hundred, you get percentage changes. So if a stock has a relative return of point zero two, it gains 2% in value; if it has a relative return of minus point zero three, it falls 3% in value. In the third definition, the returns are the differences of the log-values of the risk factors; these are log-returns. This definition is, in fact, the most widely used. Here are a few of the reasons why log-returns are popular.</p>
+<p>If you build a model for the log-returns of a risk factor, you know that the risk-factor can never become negative. This is generally a desirable feature for risk factors that are prices and rates. However, some risk factors can become negative under unusual market conditions, an example being short-term interest rates. Log returns are, in fact, very close to relative returns for typical values. It can be shown with some algebra that <span class="math inline">\(log(Z_t) - log(Z_{t-1})\)</span> can be approximated by <span class="math inline">\(\frac{Z_t - Z_{t-1}}{Z_{t-1}})\)</span> Finally, there are a couple of theoretical reasons for using log-returns: It is particularly easy to aggregate them to calculate longer-interval returns, such as weekly or monthly returns, as we will see later in this chapter. Also, there is a very famous model for prices known as the Black-Scholes-Merton model, or geometric Brownian motion (GBM). The model is widely used for pricing derivatives. If a price series follows GBM, then the log-returns will be normally distributed. That’s all you really need to know about this model at this stage.</p>
+<p>It’s worth remarking, however, that you are going to find that log-returns generally aren’t normally distributed in practice, at least for short time horizons. To calculate the log-returns of the S&amp;P 500 index, you apply the functions log and diff in succession. Diff calculates differences. Here is some code to illustrate. Note that you get an <code>NA</code> in the first position when you apply these operations. It is best to remove the first value prior to working with the return series.</p>
+<p>Now let’s plot the log-returns. You see, a fairly noisy series mostly oscillating between minus point zero five and plus point zero five, which can be approximately interpreted as 5% movements up and down. However, there are some very extreme values. The largest negative return corresponds to the famous stock market crash on Black Monday in 1987.</p>
+<p>Now it’s your turn to calculate and plot some returns in the next exercises.</p>
+<section id="exploring-return-series" class="level4">
+<h4 class="anchored" data-anchor-id="exploring-return-series">Exploring return series</h4>
+<p>To analyze risk, the key task is to model the fluctuations in prices and rates over different time periods; these fluctuations are known as returns. To calculate the log-returns of the FTSE stock index and assign to <code>ftse_x</code>, apply the <code>log()</code> and <code>diff()</code> functions in succession:</p>
+<p><code>ftse_x &lt;- diff(log(FTSE))</code></p>
+<p>As you saw in the video, differencing in this way will always give a <code>NA</code> in the first position of the time series, which can then be removed with <code>diff(log(FTSE))[-1]</code>. However, you will not need to do this in the course unless it is specified in the instructions.</p>
+<p>In this exercise, you will calculate and plot log-return series for the equity and FX risk factors that you have previously encountered. The datasets <code>dj0809</code>, <code>djstocks</code>, and <code>GBP_USD</code> have been pre-loaded into your workspace.</p>
+<ul>
+<li>Compute the log-returns of the DJ index in <code>dj0809</code> and assign to object <code>dj0809_x</code>.</li>
+<li>Plot the return series <code>dj0809_x</code>.</li>
+<li>Compute the log-returns of all share prices in <code>djstocks</code> and assign to <code>djstocks_x</code>.</li>
+<li>Plot the share returns <code>djstocks_x</code>. Note that <code>djstocks_x</code> contains multiple time series.</li>
+<li>Compute the log-returns of the <code>GBP_USD</code> exchange rate series and assign to <code>erate_x</code>.</li>
+<li>Plot the return series <code>erate_x</code>.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the log-returns of dj0809 and assign to dj0809_x</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>dj0809_x <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(dj0809))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the log-returns</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dj0809_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the log-returns of djstocks and assign to djstocks_x</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>djstocks_x <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(djstocks))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the two share returns</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djstocks_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the log-returns of GBP_USD and assign to erate_x</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>erate_x <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(GBP_USD))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the log-returns</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(erate_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="different-ways-of-plotting-risk-factor-and-return-series" class="level4">
+<h4 class="anchored" data-anchor-id="different-ways-of-plotting-risk-factor-and-return-series">Different ways of plotting risk-factor and return series</h4>
+<p>You already know that you can use <code>plot.zoo()</code> to plot multiple time series. For a four-dimensional time series <code>data</code>, the call <code>plot.zoo(data)</code> creates four separate plots by default, unless you include the parameter <code>plot.type = "single"</code> to plot all four series in one plot. You can also add even more parameters such as <code>col</code> to specify different colors and <code>type = "h"</code> to get vertical bars instead of joining points, which can sometimes be a better way of displaying returns.</p>
+<p><code>plot.zoo(x, plot.type, col = 1, type = "l", ...)</code></p>
+<p>In this exercise, you will explore the <code>plot.zoo()</code> function to plot equity risk-factor data and the corresponding returns in different ways. The multivariate time series <code>djstocks</code> and <code>DJ_const</code> are available in your workspace.</p>
+<ul>
+<li>Plot <code>djstocks</code> in four separate plots.</li>
+<li>Plot <code>djstocks</code> in one plot in colors 1 to 4. The code to create an appropriate legend for the plot is provided.</li>
+<li>Compute the log-returns of <code>djstocks</code> and assign them to <code>djstocks_x</code>.</li>
+<li>Plot <code>djstocks_x</code> in four separate plots.</li>
+<li>Plot <code>djstocks_x</code> in four separate plots with vertical bars.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>djstocks_new <span class="ot">&lt;-</span> DJ_const[<span class="st">"2008/2009"</span>, <span class="fu">c</span>(<span class="st">"AAPL"</span>, <span class="st">"AXP"</span>, <span class="st">"BA"</span>, <span class="st">"CAT"</span>)]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot djstocks in four separate plots</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djstocks_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot djstocks in one plot and add legend</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djstocks_new, <span class="at">plot.type =</span> <span class="st">"single"</span>, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="fu">julian</span>(<span class="at">x =</span> <span class="fu">as.Date</span>(<span class="st">"2009-01-01"</span>)), <span class="at">y =</span> <span class="dv">70</span>, <span class="at">legend =</span> <span class="fu">names</span>(DJ_const)[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">fill =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute log-returns and assign to djstocks_x</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>djstocksnew_x <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(djstocks_new))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot djstocks_x in four separate plots</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djstocksnew_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot djstocks_x with vertical bars</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djstocksnew_x, <span class="at">type =</span> <span class="st">"h"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="video-3" class="level3">
+<h3 class="anchored" data-anchor-id="video-3">Video 3</h3>
+<p>Aggregating log-returns:</p>
+<p>I remarked before that it is easy to aggregate shorter interval log-returns like daily returns to obtain longer-interval returns like weekly or monthly returns. Effectively you just add them up! Why would you want to do this? Well, by aggregating returns, you can study the risks over longer time horizons, such as a month, a quarter, or a year. There is some simple mathematics behind the aggregation of log-returns. Let’s assume that the series <span class="math inline">\(X_t\)</span> are daily log-returns calculated from daily risk-factor values <span class="math inline">\(Z_t\)</span>. Let’s assume further that <span class="math inline">\(Z_t\)</span> is a price series for some asset that is traded on weekdays. To get the log-return for a whole trading week starting on day t (effectively the previous Friday evening price before markets open on the Monday morning) and ending on day t+5 (Friday evening again), you would calculate the difference <span class="math inline">\(log(Z_{t+5}) - log(Z_t)\)</span>. It can be shown that this is just the sum of the log-returns for each of the trading days. And a similar calculation works for any aggregation period.</p>
+<p>To do this in R, you can use a set of functions in the <code>xts</code> package with names like <code>apply.weekly</code> and <code>apply.monthly</code>. If the object <code>sp500x</code> is an <code>xts</code> object contains daily log-returns, you obtain weekly returns by applying the <code>sum</code> function within the <code>apply.weekly</code> function. Note how the returns now have date stamps that are seven days apart. Similarly, to get monthly returns, you apply the <code>sum</code> function within the <code>apply.monthly</code> function. Now the date stamps are the last days of each calendar month. Note that if you have a multivariate time series containing, for example, multiple stock prices, you have to apply the function <code>colSums()</code> instead of <code>sum()</code>. Look out for an example of that at the end of the next exercise.</p>
+<p>So now it is time to practice aggregating log-return series.</p>
+<section id="aggregating-log-return-series" class="level4">
+<h4 class="anchored" data-anchor-id="aggregating-log-return-series">Aggregating log-return series</h4>
+<p>In statistics, aggregate data are data combined from several measurements. You just learned that you can compute compute weekly, monthly and quarterly log-returns by summing daily log-returns with the corresponding <code>apply.weekly()</code>, <code>apply.monthly()</code> and <code>apply.quarterly()</code> functions.</p>
+<p>For example, you can use the following code to form the quarterly returns for a univariate time series data and multivariate time series <code>mv_data</code>:</p>
+<p><code>apply.quarterly(x, FUN, ...)</code> <code>data_q = apply.quarterly(data, sum)</code> <code>mv_data_q = apply.quarterly(mv_data, colSums)</code></p>
+<p>In this exercise, you will practice aggregating time series data using these functions and plotting the results. The data <code>DJ</code> and <code>DJ_const</code> are available in your workspace, as are the objects <code>djx</code>, which contains daily log-returns of the Dow Jones index from 2000-2015, and <code>djreturns</code>, which contains the daily log-returns for the first four <code>DJ_const</code> stocks from 2000-2015. Use plot for univariate time series and <code>plot.zoo</code> for multivariate time series.</p>
+<ul>
+<li>Plot the object <code>djx</code>.</li>
+<li>In one line, plot the weekly log-returns of <code>djx</code> with vertical bars.</li>
+<li>Plot the monthly log-returns of <code>djx</code> with vertical bars.</li>
+<li>Plot the object <code>djreturns</code> using <code>plot.zoo</code>.</li>
+<li>Plot the monthly log-returns for <code>djreturns</code> with vertical bars using <code>plot.zoo</code>.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>djx <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(DJ[<span class="st">"2000/2015"</span>]))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot djx</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(djx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot weekly log-returns of djx</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">apply.weekly</span>(djx, sum), <span class="at">type =</span> <span class="st">"h"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot monthly log-returns of djx</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">apply.monthly</span>(djx, sum), <span class="at">type =</span> <span class="st">"h"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>djreturns <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(DJ_const[<span class="st">"2000/2015"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot djreturns</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(djreturns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot monthly log-returns of djreturns</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.zoo</span>(<span class="fu">apply.monthly</span>(djreturns, colSums), <span class="at">type =</span> <span class="st">"h"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DC_QRM_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="a-test-on-aggregation-of-log-returns" class="level4">
+<h4 class="anchored" data-anchor-id="a-test-on-aggregation-of-log-returns">A test on aggregation of log-returns</h4>
+<p>Data scientists often use the aggregations that you have learned so far in combination with summary statistics to extract even more insights from data. Functions that calculate summary statistics include <code>mean()</code>, <code>median()</code>, and <code>var()</code>.</p>
+<p>The object <code>sp</code> contains daily log-returns for the S&amp;P 500 index for the period 1960-2015; it is loaded in your workspace. To three decimal places, what is the average quarterly log-return for the S&amp;P 500 from 1990-2010?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>sp <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(SP500[<span class="st">"1990/2010"</span>]))[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  ^GSPC
+1990-01-03 -0.002588886
+1990-01-04 -0.008650298
+1990-01-05 -0.009804141
+1990-01-08  0.004504312
+1990-01-09 -0.011856706
+1990-01-10 -0.006629089</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">apply.quarterly</span>(sp, sum)), <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.015</code></pre>
+</div>
+</div>
+</section>
 </section>
 </section>
 
